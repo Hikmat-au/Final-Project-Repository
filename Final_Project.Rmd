@@ -3,9 +3,7 @@ title: "Final Project"
 author: "Hikmat Paudel"
 date: "2026-04-20"
 output:
-  md_document:
-    variant: gfm
-  pdf_document:
+  pdf_document: default
   html_document:
         toc: true
         float_toc: true
@@ -121,7 +119,7 @@ ggplot(data, aes(x = nt, y = gy, color = ph)) +
   geom_point(size = 3) +
   geom_smooth(method = "lm", se = FALSE, color = "black") +
   scale_color_gradient(low = "blue", high = "red") +
-  labs(x = "Number of tillers per square meter)",
+  labs(x = "Number of tillers per square meter",
        y = "Grain yield (t/ha)",
        color = "Plant height") +
   theme_classic(base_size = 14)
@@ -132,9 +130,9 @@ This figure illustrates how tiller density and plant height jointly influence gr
 ## 2.5. Yield and Economic Return Relationship
 
 ```{r}
-ggplot(data, aes(x = gy, y = nr, size = bc)) +
-  geom_point(alpha = 0.7, color = "darkgreen") +
-  geom_smooth(method = "lm", se = FALSE, color = "black") +
+ggplot(data, aes(x = gy, y = nr)) +
+  geom_point(aes(size = bc), alpha = 0.7, color = "darkgreen") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 1) +
   labs(x = "Grain yield (t/ha)",
        y = "Net return (NPR/ha)",
        size = "Benefit-cost ratio") +
@@ -185,7 +183,6 @@ This model evaluates whether seedling density significantly affects grain yield.
 
 ```{r}
 library(emmeans)
-
 emmeans_gy <- emmeans(model_gy, ~ trt)
 pairs(emmeans_gy)
 ```
@@ -292,8 +289,6 @@ if(any(is.na(data))) {
 - Inclusion of replication in the RCBD model improved the precision of treatment comparisons.
 
 # 7. Reproducibility Statement
-
-
 
 This analysis was conducted using R and R Markdown. All steps, including data import, visualization, and statistical analysis, are fully reproducible.
 
