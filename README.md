@@ -1,5 +1,5 @@
 # Final-Project-Repository
-Contains all files relate to my final project
+Contains all files related to my final project.
 
 
 ## Project Overview
@@ -7,11 +7,14 @@ This project analyzes the effect of seedling density on rice growth, yield, and 
 
 ## Files in this Repository
 
+```
+Final-Project-Repository/
 ├── Final-Project-Repository.Rproj
 ├── Final_Project.pdf
 ├── Final_Project.Rmd
 ├── ProjectData.csv
 └── README.md
+```
 
 ## Software Used
 - R
@@ -23,17 +26,17 @@ This project analyzes the effect of seedling density on rice growth, yield, and 
   - emmeans
 
 ## How to Run This Project
-1. Download or clone the repository
+1. Download the repository
 2. Open `Final-Project-Repository.Rproj` in RStudio
 3. Open `Final_Project.Rmd`
-4. Click **Knit** to reproduce the analysis and figures
+4. Click **Knit** to reproduce the analyses and figures
 
 ## Data Description
-The data-set includes agronomic and economic variables such as:
+The dataset includes key agronomic and economic variables such as:
 - Grain yield (gy)
 - Plant height (ph)
 - Tillers (nt, et)
 - Economic returns (nr, bc)
 
 ## Reproducibility
-All results (figures, tables, and models) can be fully reproduced by running the R Markdown file.
+The project follows a reproducible workflow. All analyses, figures, and results can be regenerated directly from the R Markdown file.
