@@ -1,0 +1,300 @@
+---
+title: "Final Project"
+author: "Hikmat Paudel"
+date: "2026-04-20"
+output:
+  md_document:
+    variant: gfm
+  pdf_document:
+  html_document:
+        toc: true
+        float_toc: true
+---
+
+# 1. Project Background
+
+## 1.1. Introduction
+
+Rice (Oryza sativa L.) is a major staple food crop in Nepal and plays a key role in food security and rural livelihoods. Improving agronomic practices is essential to increase productivity and economic returns.
+
+One important management practice is seedling density per hill, which can influence crop growth, yield, and profitability.
+
+
+## 1.2. Objective
+
+The objective of this study is to evaluate the effect of different seedling densities (1–5 seedlings per hill) on growth, grain yield, and economic performance of spring rice.
+
+## 1.3. Research Question
+
+How does seedling density affect growth, grain yield, and economic return of spring rice?
+
+## 1.4. Experimental Design
+
+The experiment was conducted using a Randomized Complete Block Design (RCBD) with:
+- 5 treatments (seedling densities: 1, 2, 3, 4, 5 seedlings per hill)
+- 4 replications
+Each treatment was randomly assigned within each replication.
+
+## 1.5. Dataset Description
+
+The data-set contains 20 observations collected from a field experiment. The variables include:
+
+- rep: replication/block  
+- trt: treatment (seedling density)  
+- ph: plant height (cm)  
+- nt: number of tillers per square meter  
+- et: effective tillers per square meter  
+- pl: panicle length (cm)  
+- fg: filled grains per panicle  
+- tgw: thousand grain weight  
+- sp: sterility percentage  
+- gy: grain yield (tons/ha)  
+- sy: straw yield (tons/ha)  
+- hi: harvest index  
+- gr: gross return (Nepali Rupees per ha)  
+- nr: net return (Nepali Rupees per ha)  
+- bc: benefit-cost ratio  
+
+## 1.6. Data Import and Preparation
+
+```{r}
+library(readr)
+library(dplyr)
+library(tidyverse)
+
+data <- read.csv("ProjectData.csv")
+
+data <- data %>%
+  mutate(rep = as.factor(rep),trt = as.factor(trt))
+
+str(data)
+summary(data)
+```
+
+# 2. Data Visualization
+Data visualization was carried out using ggplot2 to explore treatment effects and relationships among agronomic and economic variables. Figures were prepared with consistent themes, clear labeling, and minimal visual clutter.
+
+## 2.1. Effect of Seedling Density on Grain Yield
+
+```{r}
+ggplot(data, aes(x = trt, y = gy)) +
+  geom_boxplot(fill = "grey85", outlier.shape = NA) +
+  geom_jitter(width = 0.15, alpha = 0.6, size = 1.5) +
+  labs(x = "Seedling density per hill", 
+       y = "Grain yield (t/ha)") +
+  theme_classic(base_size = 14)
+```
+
+This figure shows the distribution of grain yield across seedling density treatments. It highlights both variability and central tendency within each treatment.
+
+## 2.2. Treatment Mean Response (Yield Trend)
+
+```{r}
+ggplot(data, aes(x = trt, y = gy)) +
+  stat_summary(fun = mean, geom = "point", size = 4, color = "red") +
+  stat_summary(fun = mean, geom = "line", aes(group = 1)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.15) +
+  labs(x = "Seedling density per hill", 
+       y = "Mean grain yield (t/ha)") +
+  theme_classic(base_size = 14)
+```
+
+This figure presents mean grain yield across treatments with standard error bars, allowing comparison of productivity trends across seedling densities.
+
+## 2.3. Plant Height and Grain Yield Relationship
+
+```{r}
+ggplot(data, aes(x = ph, y = gy)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  labs(x = "Plant height (cm)",
+       y = "Grain yield (t/ha)") +
+  theme_classic(base_size = 14)
+```
+
+This figure shows the relationship between plant height and grain yield, indicating how vegetative growth contributes to yield formation.
+
+## 2.4. Tillering Effect on Grain Yield (Multi-variable plot)
+
+```{r}
+ggplot(data, aes(x = nt, y = gy, color = ph)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  scale_color_gradient(low = "blue", high = "red") +
+  labs(x = "Number of tillers per square meter)",
+       y = "Grain yield (t/ha)",
+       color = "Plant height") +
+  theme_classic(base_size = 14)
+```
+
+This figure illustrates how tiller density and plant height jointly influence grain yield, highlighting multiple yield-contributing traits.
+
+## 2.5. Yield and Economic Return Relationship
+
+```{r}
+ggplot(data, aes(x = gy, y = nr, size = bc)) +
+  geom_point(alpha = 0.7, color = "darkgreen") +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  labs(x = "Grain yield (t/ha)",
+       y = "Net return (NPR/ha)",
+       size = "Benefit-cost ratio") +
+  theme_classic(base_size = 14)
+```
+
+This figure shows the economic impact of grain yield, indicating that higher yield is associated with increased net returns and profitability.
+
+## 2.6. Yield Stability Across Replications (RCBD Structure)
+
+```{r}
+ggplot(data, aes(x = trt, y = gy, group = rep)) +
+  geom_line(alpha = 0.5, color = "grey40") +
+  geom_point(aes(color = rep), size = 3) +
+  labs(x = "Seedling density per hill",
+       y = "Grain yield (t/ha)") +
+  theme_classic(base_size = 14)
+```
+
+This figure illustrates variation in treatment response across replications, reflecting the structure of the randomized complete block design.
+
+## 2.7. Economic Efficiency (Benefit–Cost Ratio)
+
+```{r}
+ggplot(data, aes(x = trt, y = bc)) +
+  geom_boxplot(fill = "grey85", outlier.shape = NA) +
+  geom_jitter(width = 0.15, alpha = 0.6) +
+  labs(x = "Seedling density per hill", 
+       y = "Benefit–cost ratio") +
+  theme_classic(base_size = 14)
+```
+
+This figure compares economic efficiency across seedling density treatments, showing differences in profitability among management practices.
+
+# 3. Statistical Analysis
+
+## 3.1. Effect of Seedling Density on Grain Yield
+
+```{r}
+model_gy <- lm(gy ~ trt, data = data)
+summary(model_gy)
+anova(model_gy)
+```
+
+This model evaluates whether seedling density significantly affects grain yield. The ANOVA tests whether mean yield differs across treatments.
+
+## 3.2. Mean Separation (Post-hoc Test)
+
+```{r}
+library(emmeans)
+
+emmeans_gy <- emmeans(model_gy, ~ trt)
+pairs(emmeans_gy)
+```
+
+Post-hoc comparisons were used to identify which treatment levels differ significantly in grain yield.
+
+## 3.3. Relationship Between Plant Height and Grain Yield
+
+```{r}
+model_ph <- lm(gy ~ ph, data = data)
+summary(model_ph)
+```
+
+This regression model examines the relationship between plant height and grain yield.
+
+## 3.4. Multiple Regression Model
+
+```{r}
+model_multi <- lm(gy ~ ph + nt + et + fg + tgw, data = data)
+summary(model_multi)
+```
+
+This model evaluates the combined effects of key agronomic traits on grain yield.
+
+## 3.5. RCBD Model (Including Replication)
+
+```{r}
+model_rcbd <- lm(gy ~ trt + rep, data = data)
+summary(model_rcbd)
+anova(model_rcbd)
+```
+
+This model accounts for the randomized complete block design by including replication as a factor.
+
+# 4. Model Diagnostics
+
+```{r}
+par(mfrow = c(2,2))
+plot(model_gy)
+```
+
+Diagnostic plots were used to evaluate model assumptions such as normality and homogeneity of variance.
+
+# 5. Reproducible and Efficient Coding
+
+## 5.1. Data Wrangling
+
+```{r}
+data_summary <- data %>%
+  group_by(trt) %>%
+  summarise(
+    mean_gy = mean(gy),
+    se_gy = sd(gy)/sqrt(n()),
+    mean_nr = mean(nr),
+    mean_bc = mean(bc))
+data_summary
+```
+
+## 5.2. Function for Linear Models
+
+```{r}
+run_model <- function(response) {
+  formula <- as.formula(paste(response, "~ trt"))
+  model <- lm(formula, data = data)
+  summary(model)
+}
+
+run_model("gy")
+run_model("ph")
+run_model("nt")
+```
+
+## 5.3. Iteration (Loop)
+
+```{r}
+traits <- c("gy", "ph", "nt", "et", "fg")
+
+results <- lapply(traits, function(x) {
+  model <- lm(as.formula(paste(x, "~ trt")), data = data)
+  anova(model)
+})
+
+names(results) <- traits
+results
+```
+
+## 5.4. Data Check
+
+```{r}
+if(any(is.na(data))) {
+  print("Missing values detected")
+} else {
+  print("No missing values in dataset")
+}
+```
+
+# 6. Key Findings
+
+- Grain yield varied significantly across seedling density treatments, with intermediate   densities (2–3 seedlings per hill) generally producing higher yields.
+- Very low or very high seedling densities resulted in comparatively lower yield.
+- Plant height showed a positive association with grain yield, indicating the importance of vegetative growth.
+- Tiller number and effective tillers contributed to yield variation in the multiple regression model.
+- Grain yield was positively related to net return, indicating higher productivity leads to better profitability.
+- Inclusion of replication in the RCBD model improved the precision of treatment comparisons.
+
+# 7. Reproducibility Statement
+
+
+
+This analysis was conducted using R and R Markdown. All steps, including data import, visualization, and statistical analysis, are fully reproducible.
+
+
