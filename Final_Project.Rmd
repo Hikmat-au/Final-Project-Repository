@@ -35,7 +35,7 @@ Each treatment was randomly assigned within each replication.
 
 ## 1.5. Dataset Description
 
-The data-set contains 20 observations collected from a field experiment. The variables include:
+The dataset contains 20 observations collected from a field experiment. The variables include:
 
 - rep: replication/block  
 - trt: treatment (seedling density)  
@@ -56,6 +56,7 @@ The data-set contains 20 observations collected from a field experiment. The var
 ## 1.6. Data Import and Preparation
 
 ```{r}
+library(ggplot2)
 library(readr)
 library(dplyr)
 library(tidyverse)
@@ -104,7 +105,7 @@ This figure presents mean grain yield across treatments with standard error bars
 ```{r}
 ggplot(data, aes(x = ph, y = gy)) +
   geom_point(size = 3, alpha = 0.7) +
-  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 1) +
   labs(x = "Plant height (cm)",
        y = "Grain yield (t/ha)") +
   theme_classic(base_size = 14)
@@ -117,7 +118,7 @@ This figure shows the relationship between plant height and grain yield, indicat
 ```{r}
 ggplot(data, aes(x = nt, y = gy, color = ph)) +
   geom_point(size = 3) +
-  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 1) +
   scale_color_gradient(low = "blue", high = "red") +
   labs(x = "Number of tillers per square meter",
        y = "Grain yield (t/ha)",
@@ -139,16 +140,17 @@ ggplot(data, aes(x = gy, y = nr)) +
   theme_classic(base_size = 14)
 ```
 
-This figure shows the economic impact of grain yield, indicating that higher yield is associated with increased net returns and profitability.
+This relationship shows that higher grain yield is associated with increased net returns, indicating improved economic efficiency.
 
 ## 2.6. Yield Stability Across Replications (RCBD Structure)
 
 ```{r}
-ggplot(data, aes(x = trt, y = gy, group = rep)) +
-  geom_line(alpha = 0.5, color = "grey40") +
-  geom_point(aes(color = rep), size = 3) +
+ggplot(data, aes(x = trt, y = gy, group = rep, color = rep)) +
+  geom_line(linewidth = 0.8, alpha = 0.6) +
+  geom_point(size = 3) +
   labs(x = "Seedling density per hill",
-       y = "Grain yield (t/ha)") +
+       y = "Grain yield (t/ha)",
+       color = "Replication") +
   theme_classic(base_size = 14)
 ```
 
@@ -177,17 +179,31 @@ summary(model_gy)
 anova(model_gy)
 ```
 
-This model evaluates whether seedling density significantly affects grain yield. The ANOVA tests whether mean yield differs across treatments.
+This model evaluates whether seedling density significantly affects grain yield. The ANOVA tests whether mean yield differs across treatments. All statistical analyses were performed at a 5% significance level. The results indicate a statistically significant effect of seedling density on grain yield (p < 0.05). Since treatment effects were significant, post-hoc comparisons were conducted to identify differences among treatments.
 
 ## 3.2. Mean Separation (Post-hoc Test)
 
 ```{r}
 library(emmeans)
+library(multcomp)
+
 emmeans_gy <- emmeans(model_gy, ~ trt)
 pairs(emmeans_gy)
+
+cld_gy <- cld(emmeans_gy, Letters = letters)
+cld_df <- as.data.frame(cld_gy)
+
+ggplot(cld_df, aes(x = trt, y = emmean)) +
+  geom_col(fill = "grey70") +
+  geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE), width = 0.15) +
+  geom_text(aes(label = .group, y = emmean + SE + 0.2), size = 5) +
+  labs(x = "Seedling density per hill",
+       y = "Mean grain yield (t/ha)") +
+  theme_classic(base_size = 14)
 ```
 
-Post-hoc comparisons were used to identify which treatment levels differ significantly in grain yield.
+Post-hoc comparisons were conducted using Tukey-adjusted pairwise tests.
+Letters above each bar represent significance groupings: Treatments sharing the same letter are not significantly different, whereas treatments with different letters differ significantly at the 5% level.
 
 ## 3.3. Relationship Between Plant Height and Grain Yield
 
@@ -224,7 +240,7 @@ par(mfrow = c(2,2))
 plot(model_gy)
 ```
 
-Diagnostic plots were used to evaluate model assumptions such as normality and homogeneity of variance.
+Diagnostic plots were used to evaluate model assumptions such as normality and homogeneity of variance. Diagnostic plots indicate that model assumptions of normality, homoscedasticity, and independence are reasonably satisfied, supporting the validity of the linear model results.
 
 # 5. Reproducible and Efficient Coding
 
@@ -291,5 +307,3 @@ if(any(is.na(data))) {
 # 7. Reproducibility Statement
 
 This analysis was conducted using R and R Markdown. All steps, including data import, visualization, and statistical analysis, are fully reproducible.
-
-

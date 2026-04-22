@@ -6,11 +6,12 @@ Contains all files relate to my final project
 This project analyzes the effect of seedling density on rice growth, yield, and economic returns using field experiment data (RCBD design).
 
 ## Files in this Repository
-- Final_Project.Rmd → Main reproducible analysis file
-- Final_Project.html → Output report (knitted document)
-- ProjectData.csv → Dataset used for analysis
-- Final-Project-Repository.Rproj → R project file
-- README.md → Project description
+
+├── Final-Project-Repository.Rproj
+├── Final_Project.pdf
+├── Final_Project.Rmd
+├── ProjectData.csv
+└── README.md
 
 ## Software Used
 - R
